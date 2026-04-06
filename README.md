@@ -214,15 +214,19 @@ Figma：https://www.figma.com/design/GZilr7k0RY3N5kCM7p6grh/Meanwhile_%E7%94%BB%
 ## 12. ER図
 [ER図はこちら](https://drive.google.com/file/d/1mnpd69_ulffewgB0bxk2P5rH7UQHfCYV/view)
 
-### 補足：データベース設計について
+### 補足: データベース設計について
 
-本ER図は、MVPで使用するLocalStorageのデータ構造をデータベース化した場合の設計です。
-ユーザー認証機能はMVPでは実装しないため、usersテーブルは含めていません。
+本ER図は、MVP時点のデータベース設計をもとに作成しています。
+MVPでは PostgreSQL を使用し、データの永続化を行っています。
+
+また、認証機能はMVPでは実装していませんが、ゲストユーザーを識別するために `users` テーブルを設け、`guest_id` を用いて投稿データを管理しています。
 
 #### MVPリリース時
-- LocalStorageを使用してデータを保存
-- ユーザー認証機能は未実装
+- PostgreSQLを使用してデータを保存
+- 認証機能は未実装
+- `guest_id` によってゲストユーザーを識別
+- `moments` `entries` を用いて投稿を管理
 
 #### 本リリース時
-- データベースでの永続化に対応
-- 認証機能を追加（usersテーブルを追加予定）
+- 認証機能を追加予定
+- ログインユーザーと投稿データを紐づけられるよう拡張予定
