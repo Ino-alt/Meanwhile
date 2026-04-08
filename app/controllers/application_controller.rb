@@ -14,6 +14,6 @@ class ApplicationController < ActionController::Base
   private
 
   def guest_id_from_cookie
-    cookies[:guest_id] ||= { value: SecureRandom.uuid, expires: 1.year }
+    cookies.signed[:guest_id] ||= { value: SecureRandom.uuid, expires: 1.year }
   end
 end
