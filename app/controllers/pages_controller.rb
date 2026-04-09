@@ -29,8 +29,10 @@ class PagesController < ApplicationController
 
   def index
     @moment_country = Country.order("RANDOM()").first
-    @local_time     = Time.now.in_time_zone(@moment_country.timezone)
-    @fixed_text     = fixed_text_for(@local_time.hour, @moment_country.name)
+    return unless @moment_country
+
+    @local_time = Time.now.in_time_zone(@moment_country.timezone)
+    @fixed_text = fixed_text_for(@local_time.hour, @moment_country.name)
   end
 
   private
