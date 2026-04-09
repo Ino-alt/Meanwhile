@@ -37,12 +37,12 @@ class PagesController < ApplicationController
 
   def fixed_text_for(hour, country_name)
     period = case hour
-             when 4..10  then :morning
-             when 11..14 then :noon
-             when 15..17 then :evening
-             when 18..21 then :night
-             else             :midnight
-             end
+    when 4..10  then :morning
+    when 11..14 then :noon
+    when 15..17 then :evening
+    when 18..21 then :night
+    else             :midnight
+    end
     FIXED_TEXTS[period].sample % country_name
   end
 end
