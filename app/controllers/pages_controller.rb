@@ -30,9 +30,18 @@ class PagesController < ApplicationController
   def index
     @current_moment = current_user.moments.find_by(id: session[:moment_id])
 
+    if @current_moment&.occurred_at&.< (Time.now - 1.day)
+      session.delete(:moment_id)
+      @current_moment = nil
+    end
+
     unless @current_moment
       @moment_country = Country.order("RANDOM()").first
-      return unless @moment_country
+
+      unless @moment_country
+        @error_message = "表示できる国のデータがありません。"
+        return
+      end
 
       @local_time     = Time.now.in_time_zone(@moment_country.timezone)
       @fixed_text     = fixed_text_for(@local_time.hour, @moment_country.name)
