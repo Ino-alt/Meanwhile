@@ -12,6 +12,6 @@ Rails.application.routes.draw do
   root "pages#index"
 
   resources :moments, only: [] do
-    resources :entries, only: [:create]
+    resources :entries, only: [ :create ]
   end
 end
