@@ -1,7 +1,16 @@
 <h1>Meanwhile</h1>
 <p>Hello, Meanwhile!</p>
 
-<p><%= @moment_country.name %></p>
-<p><%= @local_time.strftime("%H:%M") %></p>
-<p><%= @fixed_text %></p>
-<p>いま、あなたはどんな時間を過ごしていますか？</p>
+<% if @error_message %>
+  <p><%= @error_message %></p>
+<% else %>
+  <p><%= @moment_country.name %></p>
+  <p><%= @local_time.strftime("%H:%M") %></p>
+  <p><%= @fixed_text %></p>
+  <p>いま、あなたはどんな時間を過ごしていますか？</p>
+
+  <%= form_with model: [@current_moment, Entry.new] do |f| %>
+    <%= f.text_area :body, placeholder: "今を書く。" %>
+    <%= f.submit "残す" %>
+  <% end %>
+<% end %>

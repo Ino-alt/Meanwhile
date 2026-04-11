@@ -28,11 +28,34 @@ class PagesController < ApplicationController
   }.freeze
 
   def index
-    @moment_country = Country.order("RANDOM()").first
-    return unless @moment_country
+    @current_moment = current_user.moments.find_by(id: session[:moment_id])
 
-    @local_time = Time.now.in_time_zone(@moment_country.timezone)
-    @fixed_text = fixed_text_for(@local_time.hour, @moment_country.name)
+    if @current_moment&.occurred_at&.< (Time.now - 1.day)
+      session.delete(:moment_id)
+      @current_moment = nil
+    end
+
+    unless @current_moment
+      @moment_country = Country.order("RANDOM()").first
+
+      unless @moment_country
+        @error_message = "表示できる国のデータがありません。"
+        return
+      end
+
+      @local_time     = Time.now.in_time_zone(@moment_country.timezone)
+      @fixed_text     = fixed_text_for(@local_time.hour, @moment_country.name)
+      @current_moment = current_user.moments.create!(
+        country:     @moment_country,
+        fixed_text:  @fixed_text,
+        occurred_at: @local_time
+      )
+      session[:moment_id] = @current_moment.id
+    end
+
+    @moment_country = @current_moment.country
+    @local_time     = @current_moment.occurred_at.in_time_zone(@moment_country.timezone)
+    @fixed_text     = @current_moment.fixed_text
   end
 
   private
