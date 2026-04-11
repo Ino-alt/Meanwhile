@@ -9,7 +9,7 @@ class ApplicationController < ActionController::Base
 
   # cookieのguest_idをもとにUserを取得または作成する。ビューからも参照可能
   def current_user
-    @current_user ||= User.find_or_create_by!(guest_id: guest_id_from_cookie)
+    @current_user ||= User.create_or_find_by!(guest_id: guest_id_from_cookie)
   end
 
   private
