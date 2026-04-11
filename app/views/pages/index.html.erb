@@ -8,6 +8,7 @@
   <p><%= @local_time.strftime("%H:%M") %></p>
   <p><%= @fixed_text %></p>
   <p>いま、あなたはどんな時間を過ごしていますか？</p>
+  <%= button_to "更新", refresh_path, method: :post %>
 
   <%= form_with model: [@current_moment, Entry.new] do |f| %>
     <%= f.text_area :body, placeholder: "今を書く。" %>

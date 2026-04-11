@@ -1,4 +1,5 @@
 class PagesController < ApplicationController
+  # 時間帯ごとの定型文。%s に国名を埋め込んで使用する
   FIXED_TEXTS = {
     morning: [
       "%s では今、朝の時間が流れています。",
@@ -27,9 +28,11 @@ class PagesController < ApplicationController
     ]
   }.freeze
 
+  # トップページ：セッションのmomentを使い回すか、新しく作成してビューに渡す
   def index
     @current_moment = current_user.moments.find_by(id: session[:moment_id])
 
+    # momentが1日以上前の場合はセッションをリセットして作り直す
     if @current_moment&.occurred_at&.< (Time.now - 1.day)
       session.delete(:moment_id)
       @current_moment = nil
@@ -38,6 +41,7 @@ class PagesController < ApplicationController
     unless @current_moment
       @moment_country = Country.order("RANDOM()").first
 
+      # countriesテーブルが空の場合はエラーメッセージを表示して終了
       unless @moment_country
         @error_message = "表示できる国のデータがありません。"
         return
@@ -58,8 +62,15 @@ class PagesController < ApplicationController
     @fixed_text     = @current_moment.fixed_text
   end
 
+  # 更新ボタン：セッションのmoment_idを削除してトップページにリダイレクトする
+  def refresh
+    session.delete(:moment_id)
+    redirect_to root_path
+  end
+
   private
 
+  # 時刻（hour）と国名から、時間帯に応じた定型文をランダムに1文返す
   def fixed_text_for(hour, country_name)
     period = case hour
     when 4..10  then :morning
