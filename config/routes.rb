@@ -9,8 +9,13 @@ Rails.application.routes.draw do
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
+  # トップページ：ランダムな国の「今」を表示する
   root "pages#index"
 
+  # 更新ボタン用：セッションをリセットして新しい国をランダムに表示する
+  post "refresh", to: "pages#refresh"
+
+  # 日記の投稿：moment に紐づく entry を作成する
   resources :moments, only: [] do
     resources :entries, only: [ :create ]
   end

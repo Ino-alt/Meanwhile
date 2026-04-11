@@ -7,12 +7,14 @@ class ApplicationController < ActionController::Base
 
   helper_method :current_user
 
+  # cookieのguest_idをもとにUserを取得または作成する。ビューからも参照可能
   def current_user
     @current_user ||= User.find_or_create_by!(guest_id: guest_id_from_cookie)
   end
 
   private
 
+  # cookieにguest_idが存在すればその値を返す。なければUUIDを生成してsigned cookieに1年間保存する
   def guest_id_from_cookie
     cookies.signed[:guest_id] || begin
       uuid = SecureRandom.uuid
