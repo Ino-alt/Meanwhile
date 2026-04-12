@@ -1,8 +1,8 @@
 import { Controller } from "@hotwired/stimulus"
 
-// ボトムシートおよびポップアップの開閉を管理するコントローラー
+// ボトムシートおよびポップアップ（Step1〜3）の開閉・遷移を管理するコントローラー
 export default class extends Controller {
-  static targets = ["sheet", "overlay", "step1", "step2"]
+  static targets = ["sheet", "overlay", "popupOverlay", "step1", "step2", "step3"]
 
   // ＋ボタンが押されたらボトムシートとオーバーレイを表示する
   open() {
@@ -16,15 +16,28 @@ export default class extends Controller {
     this.overlayTarget.classList.add("hidden")
   }
 
-  // Step1（国・時刻表示）を非表示にしてStep2（質問・入力）を表示する
+  // 現在表示中のStepを非表示にして次のStepを表示する
+  // Step1 → Step2 → Step3 の順に進む
   nextStep() {
-    this.step1Target.classList.add("hidden")
-    this.step2Target.classList.remove("hidden")
+    if (!this.step1Target.classList.contains("hidden")) {
+      // Step1が表示中 → Step2へ
+      this.step1Target.classList.add("hidden")
+      this.step2Target.classList.remove("hidden")
+    } else if (!this.step2Target.classList.contains("hidden")) {
+      // Step2が表示中 → Step3へ
+      this.step2Target.classList.add("hidden")
+      this.step3Target.classList.remove("hidden")
+    }
   }
 
-  // Step1・Step2両方を非表示にしてポップアップを閉じる
-  closePopup() {
+  // Step1〜3およびポップアップオーバーレイをすべて非表示にしてポップアップを閉じる
+  // eventを受け取りデフォルト動作とバブリングを止めることでフォーム送信を完全にブロックする
+  closePopup(event) {
+    event.preventDefault()
+    event.stopPropagation()
     this.step1Target.classList.add("hidden")
     this.step2Target.classList.add("hidden")
+    this.step3Target.classList.add("hidden")
+    this.popupOverlayTarget.classList.add("hidden")
   }
 }
