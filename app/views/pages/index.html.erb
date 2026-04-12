@@ -1,42 +1,111 @@
 <%# ページ全体のラッパー。ボトムシートコントローラーをここにマウントする %>
-<div class="min-h-screen pb-20" style="background-color: #fdf8f3;" data-controller="bottom-sheet">
+<div class="min-h-screen pb-20" style="background-color: #f0ede8;" data-controller="bottom-sheet">
 
   <% if @error_message %>
     <%# 国データがない場合のエラーメッセージ %>
-    <div class="p-6">
+    <div class="p-6" style="background-color: #fdf8f3;">
       <p class="text-sm" style="color: #b85c38;"><%= @error_message %></p>
     </div>
   <% else %>
 
-    <%# ヘッダー：アプリ名と更新ボタン %>
-    <header class="flex items-center justify-between px-6 pt-10 pb-4">
-      <h1 class="text-xl font-bold tracking-wide" style="color: #7a6552;">Meanwhile</h1>
-      <%# 更新ボタン：新しい国をランダムに表示する %>
-      <%= button_to "更新", refresh_path, method: :post,
-            class: "px-4 py-2 rounded-full text-sm font-medium text-white",
-            style: "background-color: #b85c38;" %>
-    </header>
+    <%# 国旗絵文字をcountry_codeから取得する %>
+    <% flag = case @moment_country.country_code
+              when "KR" then "🇰🇷"
+              when "TR" then "🇹🇷"
+              when "BR" then "🇧🇷"
+              when "SE" then "🇸🇪"
+              when "AU" then "🇦🇺"
+              when "KE" then "🇰🇪"
+              end %>
 
-    <%# 国・時刻・定型文のカード %>
-    <section class="mx-6 mt-4 rounded-2xl p-6 shadow-sm bg-white">
-      <%# 国名 %>
-      <p class="text-sm font-medium mb-2" style="color: #7a6552;">
-        <%= @moment_country.name %>
-      </p>
-      <%# 時刻（大きめフォントで表示） %>
-      <p class="text-6xl font-bold tracking-tight mb-4" style="color: #b85c38;">
-        <%= @local_time.strftime("%H:%M") %>
-      </p>
-      <%# 定型文 %>
-      <p class="text-base leading-relaxed" style="color: #7a6552;">
-        <%= @fixed_text %>
-      </p>
-    </section>
+    <%# ヘッダー＋週カレンダー：同じ背景色でシームレスにつなげる %>
+    <div style="background-color: #fdf8f3;">
 
-    <%# 質問文 %>
-    <p class="text-center mt-8 text-sm" style="color: #7a6552;">
-      いま、あなたはどんな時間を過ごしていますか？
-    </p>
+      <%# ヘッダー：左に現地時刻・国情報、右にアプリ名・更新ボタン %>
+      <header class="flex items-center justify-between px-6 pt-8 pb-4">
+
+        <%# 左：現地時刻（大きく）＋国旗＋国名 %>
+        <div>
+          <p class="text-5xl font-bold tracking-tight" style="color: #4B2D1C;">
+            <%= @local_time.strftime("%H:%M") %>
+          </p>
+          <p class="text-sm mt-1" style="color: #7a6552;">
+            <%= flag %> <%= @moment_country.name %>
+          </p>
+        </div>
+
+        <%# 右：アプリ名と更新ボタンを縦並びで配置 %>
+        <div class="flex flex-col items-end gap-2">
+          <%# アプリ名：フォントサイズを大きく %>
+          <p class="text-2xl font-bold" style="color: #4B2D1C;">Meanwhile</p>
+          <%# 更新ボタン：セッションをリセットして新しい国を表示する %>
+          <%= button_to "更新", refresh_path, method: :post,
+                class: "px-4 py-1.5 rounded-full text-sm font-medium text-white",
+                style: "background-color: #b85c38;" %>
+        </div>
+
+      </header>
+
+      <%# 週カレンダー：日〜土の7日分を表示し、今日をハイライトする %>
+      <div class="flex justify-around px-4 pb-5">
+        <% (Date.current.beginning_of_week(:sunday)..Date.current.beginning_of_week(:sunday) + 6).each do |date| %>
+          <div class="flex flex-col items-center gap-1">
+            <%# 曜日ラベル（日本語） %>
+            <span class="text-xs" style="color: #7a6552;">
+              <%= %w[日 月 火 水 木 金 土][date.wday] %>
+            </span>
+            <%# 今日はテラコッタの丸でハイライト、それ以外はそのまま %>
+            <% if date == Date.current %>
+              <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm text-white font-medium"
+                    style="background-color: #b85c38;">
+                <%= date.day %>
+              </span>
+            <% else %>
+              <span class="w-8 h-8 flex items-center justify-center text-sm" style="color: #7a6552;">
+                <%= date.day %>
+              </span>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+
+    </div><%# /ヘッダー＋カレンダーエリア %>
+
+    <%# チャットエリア：世界の吹き出しとユーザーのentriesを表示する %>
+    <div class="px-4 py-6">
+
+      <%# 世界の吹き出し（左寄せ）：定型文を表示する %>
+      <div class="flex flex-col items-start mb-6">
+        <%# 国旗＋国名ラベル：吹き出しより左にはみ出して配置する %>
+        <p class="text-xs mb-1.5 -ml-2" style="color: #7a6552;">
+          <%= flag %> <%= @moment_country.name %>
+        </p>
+        <%# 吹き出し本体：白背景・角丸・影 %>
+        <div class="bg-white rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm max-w-xs">
+          <p class="text-sm leading-relaxed" style="color: #4B2D1C;"><%= @fixed_text %></p>
+        </div>
+        <%# 現地時刻（吹き出しの下） %>
+        <p class="text-xs mt-1 ml-1" style="color: #7a6552;">
+          <%= @local_time.strftime("%H:%M") %>
+        </p>
+      </div>
+
+      <%# ユーザーのentriesバブル（右寄せ） %>
+      <% @current_moment.entries.each do |entry| %>
+        <div class="flex flex-col items-end mb-4">
+          <%# バブル本体：テラコッタ背景・白テキスト・右下のみ小さい角丸 %>
+          <div class="rounded-2xl rounded-br-sm px-4 py-3 max-w-xs"
+               style="background-color: #b85c38;">
+            <p class="text-sm text-white"><%= entry.body %></p>
+          </div>
+          <%# 投稿時刻（日本時間）をバブルの下に表示する %>
+          <p class="text-xs mt-1 mr-1" style="color: #7a6552;">
+            <%= entry.created_at.in_time_zone("Tokyo").strftime("%H:%M") %>
+          </p>
+        </div>
+      <% end %>
+
+    </div><%# /チャットエリア %>
 
     <%# ＋ボタン：タップするとボトムシートを開く %>
     <button data-action="bottom-sheet#open"
