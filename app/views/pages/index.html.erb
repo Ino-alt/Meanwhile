@@ -107,6 +107,60 @@
 
     </div><%# /チャットエリア %>
 
+    <%# ポップアップオーバーレイ：Step1・Step2共通の背景暗転 %>
+    <% popup_hidden = @show_popup ? "" : "hidden" %>
+    <div class="<%= popup_hidden %> fixed inset-0 bg-black/50 z-30 flex items-center justify-center px-6">
+
+      <%# Step1ポップアップ：国・時刻を表示する。新しいmoment作成時に自動表示 %>
+      <div data-bottom-sheet-target="step1"
+           class="<%= popup_hidden %> bg-white rounded-3xl p-8 w-full max-w-sm text-center shadow-xl">
+        <%# 国旗と国名 %>
+        <p class="text-4xl mb-2"><%= flag %></p>
+        <p class="text-sm font-medium mb-4" style="color: #7a6552;"><%= @moment_country.name %></p>
+        <%# 現地時刻（大きく表示） %>
+        <p class="text-6xl font-bold tracking-tight mb-6" style="color: #4B2D1C;">
+          <%= @local_time.strftime("%H:%M") %>
+        </p>
+        <%# 次へボタン：Step2に切り替える %>
+        <button data-action="bottom-sheet#nextStep"
+                class="w-full py-3 rounded-full text-white font-medium"
+                style="background-color: #b85c38;">
+          次へ →
+        </button>
+      </div>
+
+      <%# Step2ポップアップ：質問と投稿フォームを表示する。常にhiddenでStep1の「次へ」で表示 %>
+      <div data-bottom-sheet-target="step2"
+           class="hidden bg-white rounded-3xl p-8 w-full max-w-sm shadow-xl">
+        <%# 質問文 %>
+        <p class="text-base font-medium mb-6 text-center" style="color: #4B2D1C;">
+          あなたは今、何をしていますか？
+        </p>
+        <%# 投稿フォーム %>
+        <%= form_with model: [@current_moment, Entry.new] do |f| %>
+          <%= f.text_area :body,
+                placeholder: "今を書く。",
+                rows: 4,
+                class: "w-full rounded-xl p-4 text-sm resize-none focus:outline-none border",
+                style: "border-color: #e5d5c5; color: #7a6552;" %>
+          <div class="flex gap-3 mt-4">
+            <%# とじるボタン：Step1・Step2両方を閉じる %>
+            <button type="button"
+                    data-action="bottom-sheet#closePopup"
+                    class="flex-1 py-3 rounded-full text-sm font-medium border"
+                    style="color: #7a6552; border-color: #e5d5c5;">
+              とじる
+            </button>
+            <%# 残すボタン：フォームを送信する %>
+            <%= f.submit "残す",
+                  class: "flex-1 py-3 rounded-full text-white font-medium cursor-pointer",
+                  style: "background-color: #b85c38;" %>
+          </div>
+        <% end %>
+      </div>
+
+    </div><%# /ポップアップ %>
+
     <%# ＋ボタン：タップするとボトムシートを開く %>
     <button data-action="bottom-sheet#open"
             class="fixed right-6 bottom-24 w-14 h-14 rounded-full text-white text-3xl shadow-lg flex items-center justify-center"

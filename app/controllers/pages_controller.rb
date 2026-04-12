@@ -1,30 +1,30 @@
 class PagesController < ApplicationController
-  # 時間帯ごとの定型文。%s に国名を埋め込んで使用する
+  # 時間帯ごとの定型文。%s に国名を埋め込んで使用する。すべて「%s では〜」形式で統一
   FIXED_TEXTS = {
     morning: [
-      "%s では今、朝の時間が流れています。",
-      "%s の朝は、静かに始まろうとしています。",
-      "%s の誰かが、今日最初の一歩を踏み出しています。"
+      "%s では今、朝の光が静かに広がっています。",
+      "%s では今、新しい一日が始まろうとしています。",
+      "%s では今、朝の気配が街に漂っています。"
     ],
     noon: [
-      "%s では今、昼の光が降り注いでいます。",
-      "%s の誰かが、今日の折り返し地点に立っています。",
-      "%s では今、一日の真ん中を過ごしています。"
+      "%s では今、昼の陽射しが降り注いでいます。",
+      "%s では今、一日の折り返し地点を迎えています。",
+      "%s では今、街が昼の賑わいに包まれています。"
     ],
     evening: [
-      "%s では今、夕暮れが街を染めています。",
-      "%s の誰かが、窓の外の夕陽を眺めています。",
+      "%s では今、夕暮れが街を染め始めています。",
+      "%s では今、西の空がだんだんと赤く染まっています。",
       "%s では今、一日の終わりが近づいています。"
     ],
     night: [
-      "%s では今、夜が深まっています。",
-      "%s の誰かが、今日を振り返る時間を過ごしています。",
-      "%s では今、街の灯りがともっています。"
+      "%s では今、夜の帳が下りています。",
+      "%s では今、街の灯りがともっています。",
+      "%s では今、人々が今日を振り返る時間を過ごしています。"
     ],
     midnight: [
       "%s では今、深夜の静けさが広がっています。",
-      "%s の誰かが、眠れない夜を過ごしています。",
-      "%s では今、ほとんどの人が夢の中にいます。"
+      "%s では今、ほとんどの人が夢の中にいます。",
+      "%s では今、夜が最も深い時間を迎えています。"
     ]
   }.freeze
 
@@ -54,17 +54,23 @@ class PagesController < ApplicationController
         fixed_text:  @fixed_text,
         occurred_at: @local_time
       )
-      session[:moment_id] = @current_moment.id
+      session[:moment_id]   = @current_moment.id
+      # 新しいmomentが作成されたときにポップアップを表示するフラグをセット
+      session[:show_popup]  = true
     end
 
     @moment_country = @current_moment.country
     @local_time     = @current_moment.occurred_at.in_time_zone(@moment_country.timezone)
     @fixed_text     = @current_moment.fixed_text
+
+    # ポップアップ表示フラグをビューに渡してからセッションから削除する
+    @show_popup = session.delete(:show_popup)
   end
 
-  # 更新ボタン：セッションのmoment_idを削除してトップページにリダイレクトする
+  # 更新ボタン：セッションをリセットしてポップアップを再表示する
   def refresh
     session.delete(:moment_id)
+    session[:show_popup] = true
     redirect_to root_path
   end
 
