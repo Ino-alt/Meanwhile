@@ -1,17 +1,79 @@
-<h1>Meanwhile</h1>
-<p>Hello, Meanwhile!</p>
+<%# ページ全体のラッパー。ボトムシートコントローラーをここにマウントする %>
+<div class="min-h-screen pb-20" style="background-color: #fdf8f3;" data-controller="bottom-sheet">
 
-<% if @error_message %>
-  <p><%= @error_message %></p>
-<% else %>
-  <p><%= @moment_country.name %></p>
-  <p><%= @local_time.strftime("%H:%M") %></p>
-  <p><%= @fixed_text %></p>
-  <p>いま、あなたはどんな時間を過ごしていますか？</p>
-  <%= button_to "更新", refresh_path, method: :post %>
+  <% if @error_message %>
+    <%# 国データがない場合のエラーメッセージ %>
+    <div class="p-6">
+      <p class="text-sm" style="color: #b85c38;"><%= @error_message %></p>
+    </div>
+  <% else %>
 
-  <%= form_with model: [@current_moment, Entry.new] do |f| %>
-    <%= f.text_area :body, placeholder: "今を書く。" %>
-    <%= f.submit "残す" %>
+    <%# ヘッダー：アプリ名と更新ボタン %>
+    <header class="flex items-center justify-between px-6 pt-10 pb-4">
+      <h1 class="text-xl font-bold tracking-wide" style="color: #7a6552;">Meanwhile</h1>
+      <%# 更新ボタン：新しい国をランダムに表示する %>
+      <%= button_to "更新", refresh_path, method: :post,
+            class: "px-4 py-2 rounded-full text-sm font-medium text-white",
+            style: "background-color: #b85c38;" %>
+    </header>
+
+    <%# 国・時刻・定型文のカード %>
+    <section class="mx-6 mt-4 rounded-2xl p-6 shadow-sm bg-white">
+      <%# 国名 %>
+      <p class="text-sm font-medium mb-2" style="color: #7a6552;">
+        <%= @moment_country.name %>
+      </p>
+      <%# 時刻（大きめフォントで表示） %>
+      <p class="text-6xl font-bold tracking-tight mb-4" style="color: #b85c38;">
+        <%= @local_time.strftime("%H:%M") %>
+      </p>
+      <%# 定型文 %>
+      <p class="text-base leading-relaxed" style="color: #7a6552;">
+        <%= @fixed_text %>
+      </p>
+    </section>
+
+    <%# 質問文 %>
+    <p class="text-center mt-8 text-sm" style="color: #7a6552;">
+      いま、あなたはどんな時間を過ごしていますか？
+    </p>
+
+    <%# ＋ボタン：タップするとボトムシートを開く %>
+    <button data-action="bottom-sheet#open"
+            class="fixed right-6 bottom-24 w-14 h-14 rounded-full text-white text-3xl shadow-lg flex items-center justify-center"
+            style="background-color: #b85c38;">
+      +
+    </button>
+
+    <%# オーバーレイ：ボトムシート表示時に背景を暗転させる。タップで閉じる %>
+    <div data-bottom-sheet-target="overlay"
+         data-action="click->bottom-sheet#close"
+         class="hidden fixed inset-0 bg-black/40 z-10">
+    </div>
+
+    <%# ボトムシート：投稿フォームを収納する。デフォルト非表示 %>
+    <div data-bottom-sheet-target="sheet"
+         class="hidden fixed bottom-0 left-0 right-0 rounded-t-2xl bg-white p-6 z-20 shadow-xl">
+      <%# ボトムシートのヘッダー：現在の日時と✕ボタンを横並びで表示する %>
+      <div class="flex items-center justify-between mb-4">
+        <%# 投稿時の現在日時を日本時間で「4月12日 16:07」形式で表示する %>
+        <p class="text-sm" style="color: #7a6552;"><%= Time.current.in_time_zone("Tokyo").strftime("%-m月%-d日 %H:%M") %></p>
+        <%# ✕ボタン：ボトムシートを閉じる %>
+        <button data-action="bottom-sheet#close"
+                class="text-xl" style="color: #7a6552;">✕</button>
+      </div>
+      <%# 投稿フォーム %>
+      <%= form_with model: [@current_moment, Entry.new] do |f| %>
+        <%= f.text_area :body,
+              placeholder: "今を書く。",
+              rows: 4,
+              class: "w-full rounded-xl p-4 text-sm resize-none focus:outline-none border",
+              style: "border-color: #e5d5c5; color: #7a6552;" %>
+        <%= f.submit "残す",
+              class: "mt-4 w-full py-3 rounded-full text-white font-medium cursor-pointer",
+              style: "background-color: #b85c38;" %>
+      <% end %>
+    </div>
+
   <% end %>
-<% end %>
+</div>
