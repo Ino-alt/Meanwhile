@@ -1,0 +1,20 @@
+<h1>これまでの「今」</h1>
+
+<% if @moments.empty? %>
+  <p>まだ記録がありません。</p>
+<% else %>
+  <% @moments.each do |moment| %>
+    <div>
+      <%# 国名・時刻・定型文を表示する %>
+      <p><%= moment.country.name %></p>
+      <%# occurred_atがnilの場合は"--:--"を表示する %>
+      <p><%= moment.occurred_at&.in_time_zone(moment.country.timezone)&.strftime("%H:%M") || "--:--" %></p>
+      <p><%= moment.fixed_text %></p>
+
+      <%# このmomentに紐づく日記一覧を表示する %>
+      <% moment.entries.each do |entry| %>
+        <p><%= entry.body %></p>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>

@@ -15,8 +15,9 @@ Rails.application.routes.draw do
   # 更新ボタン用：セッションをリセットして新しい国をランダムに表示する
   post "refresh", to: "pages#refresh"
 
+  # momentの一覧ページ：これまでの「今」と日記を振り返る
   # 日記の投稿：moment に紐づく entry を作成する
-  resources :moments, only: [] do
+  resources :moments, only: [ :index ] do
     resources :entries, only: [ :create ]
   end
 end
