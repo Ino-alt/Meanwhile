@@ -1,17 +1,235 @@
-<h1>Meanwhile</h1>
-<p>Hello, Meanwhile!</p>
+<%# ページ全体のラッパー。背景色のみ指定し、data-controllerはポップアップ以下のdivに移動 %>
+<div class="min-h-screen pb-20" style="background-color: #f0ede8;">
 
-<% if @error_message %>
-  <p><%= @error_message %></p>
-<% else %>
-  <p><%= @moment_country.name %></p>
-  <p><%= @local_time.strftime("%H:%M") %></p>
-  <p><%= @fixed_text %></p>
-  <p>いま、あなたはどんな時間を過ごしていますか？</p>
-  <%= button_to "更新", refresh_path, method: :post %>
+  <% if @error_message %>
+    <%# 国データがない場合のエラーメッセージ %>
+    <div class="p-6" style="background-color: #fdf8f3;">
+      <p class="text-sm" style="color: #b85c38;"><%= @error_message %></p>
+    </div>
+  <% else %>
 
-  <%= form_with model: [@current_moment, Entry.new] do |f| %>
-    <%= f.text_area :body, placeholder: "今を書く。" %>
-    <%= f.submit "残す" %>
+    <%# 国旗絵文字をcountry_codeから取得する %>
+    <% flag = case @moment_country.country_code
+              when "KR" then "🇰🇷"
+              when "TR" then "🇹🇷"
+              when "BR" then "🇧🇷"
+              when "SE" then "🇸🇪"
+              when "AU" then "🇦🇺"
+              when "KE" then "🇰🇪"
+              end %>
+
+    <%# ヘッダー＋週カレンダー：同じ背景色でシームレスにつなげる %>
+    <div style="background-color: #fdf8f3;">
+
+      <%# ヘッダー：左に現地時刻・国情報、右にアプリ名・更新ボタン %>
+      <header class="flex items-center justify-between px-6 pt-8 pb-4">
+
+        <%# 左：現地時刻（大きく）＋国旗＋国名 %>
+        <div>
+          <p class="text-5xl font-bold tracking-tight" style="color: #4B2D1C;">
+            <%= @local_time.strftime("%H:%M") %>
+          </p>
+          <p class="text-sm mt-1" style="color: #7a6552;">
+            <%= flag %> <%= @moment_country.name %>
+          </p>
+        </div>
+
+        <%# 右：アプリ名と更新ボタンを縦並びで配置 %>
+        <div class="flex flex-col items-end gap-2">
+          <%# アプリ名：フォントサイズを大きく %>
+          <p class="text-2xl font-bold" style="color: #4B2D1C;">Meanwhile</p>
+          <%# 更新ボタン：button_toでPOSTを発行してセッションをリセットし、新しい国を表示する。Turboを無効化してフルリロードで遷移する %>
+          <%= button_to "更新", refresh_path, method: :post,
+                data: { turbo: false },
+                class: "px-4 py-1.5 rounded-full text-sm font-medium text-white",
+                style: "background-color: #b85c38;" %>
+        </div>
+
+      </header>
+
+      <%# 週カレンダー：日〜土の7日分を表示し、今日をハイライトする %>
+      <div class="flex justify-around px-4 pb-5">
+        <% (Date.current.beginning_of_week(:sunday)..Date.current.beginning_of_week(:sunday) + 6).each do |date| %>
+          <div class="flex flex-col items-center gap-1">
+            <%# 曜日ラベル（日本語） %>
+            <span class="text-xs" style="color: #7a6552;">
+              <%= %w[日 月 火 水 木 金 土][date.wday] %>
+            </span>
+            <%# 今日はテラコッタの丸でハイライト、それ以外はそのまま %>
+            <% if date == Date.current %>
+              <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm text-white font-medium"
+                    style="background-color: #b85c38;">
+                <%= date.day %>
+              </span>
+            <% else %>
+              <span class="w-8 h-8 flex items-center justify-center text-sm" style="color: #7a6552;">
+                <%= date.day %>
+              </span>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+
+    </div><%# /ヘッダー＋カレンダーエリア %>
+
+    <%# チャットエリア：世界の吹き出しとユーザーのentriesを表示する %>
+    <div class="px-4 py-6">
+
+      <%# 世界の吹き出し（左寄せ）：定型文を表示する %>
+      <div class="flex flex-col items-start mb-6">
+        <%# 国旗＋国名ラベル：吹き出しより左にはみ出して配置する %>
+        <p class="text-xs mb-1.5 -ml-2" style="color: #7a6552;">
+          <%= flag %> <%= @moment_country.name %>
+        </p>
+        <%# 吹き出し本体：白背景・角丸・影 %>
+        <div class="bg-white rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm max-w-xs">
+          <p class="text-sm leading-relaxed" style="color: #4B2D1C;"><%= @fixed_text %></p>
+        </div>
+        <%# 現地時刻（吹き出しの下） %>
+        <p class="text-xs mt-1 ml-1" style="color: #7a6552;">
+          <%= @local_time.strftime("%H:%M") %>
+        </p>
+      </div>
+
+      <%# ユーザーのentriesバブル（右寄せ） %>
+      <% @current_moment.entries.each do |entry| %>
+        <div class="flex flex-col items-end mb-4">
+          <%# バブル本体：テラコッタ背景・白テキスト・右下のみ小さい角丸 %>
+          <div class="rounded-2xl rounded-br-sm px-4 py-3 max-w-xs"
+               style="background-color: #b85c38;">
+            <p class="text-sm text-white"><%= entry.body %></p>
+          </div>
+          <%# 投稿時刻（日本時間）をバブルの下に表示する %>
+          <p class="text-xs mt-1 mr-1" style="color: #7a6552;">
+            <%= entry.created_at.in_time_zone("Tokyo").strftime("%H:%M") %>
+          </p>
+        </div>
+      <% end %>
+
+    </div><%# /チャットエリア %>
+
+    <%# ボトムシートコントローラーのスコープ：ポップアップ・＋ボタン・オーバーレイ・ボトムシートをまとめて管理する %>
+    <div data-controller="bottom-sheet">
+
+    <%# ポップアップオーバーレイ：Step1〜3共通の背景暗転＋ぼかし %>
+    <% popup_hidden = @show_popup ? "" : "hidden" %>
+    <%# country_codeから英語国名（大文字）を取得する %>
+    <% english_name = case @moment_country.country_code
+                      when "KR" then "KOREA"
+                      when "TR" then "TURKEY"
+                      when "BR" then "BRAZIL"
+                      when "SE" then "SWEDEN"
+                      when "AU" then "AUSTRALIA"
+                      when "KE" then "KENYA"
+                      end %>
+    <%# popupOverlayターゲット：closePopup()でオーバーレイごと非表示にするために付与する %>
+    <div data-bottom-sheet-target="popupOverlay"
+         class="<%= popup_hidden %> fixed inset-0 bg-black/50 backdrop-blur-sm z-30 flex items-center justify-center px-6">
+
+      <%# Step1ポップアップ：国旗・英語国名・現地時刻を表示する。新しいmoment作成時に自動表示 %>
+      <div data-bottom-sheet-target="step1"
+           class="<%= popup_hidden %> bg-white rounded-3xl p-8 w-full max-w-sm text-center shadow-xl">
+        <%# 国旗絵文字 %>
+        <p class="text-5xl mb-3"><%= flag %></p>
+        <%# 英語国名（大文字） %>
+        <p class="text-xs font-bold tracking-widest mb-6" style="color: #7a6552;"><%= english_name %></p>
+        <%# 現地時刻（大きく表示） %>
+        <p class="text-6xl font-bold tracking-tight" style="color: #4B2D1C;">
+          <%= @local_time.strftime("%H:%M") %>
+        </p>
+        <%# 「現地時刻」ラベル %>
+        <p class="text-xs mt-2 mb-8" style="color: #7a6552;">現地時刻</p>
+        <%# 次へボタン：Step2へ進む %>
+        <button data-action="bottom-sheet#nextStep"
+                class="w-full py-3 rounded-full text-white font-medium"
+                style="background-color: #b85c38;">
+          次へ →
+        </button>
+      </div>
+
+      <%# Step2ポップアップ：定型文を表示する。Step1の「次へ」で表示 %>
+      <div data-bottom-sheet-target="step2"
+           class="hidden bg-white rounded-3xl p-8 w-full max-w-sm text-center shadow-xl">
+        <%# 国旗＋英語国名（小さく） %>
+        <p class="text-xs font-bold tracking-widest mb-6" style="color: #7a6552;">
+          <%= flag %> <%= english_name %>
+        </p>
+        <%# 定型文テキスト %>
+        <p class="text-base leading-relaxed mb-8" style="color: #4B2D1C;">
+          <%= @fixed_text %>
+        </p>
+        <%# 次へボタン：Step3へ進む %>
+        <button data-action="bottom-sheet#nextStep"
+                class="w-full py-3 rounded-full text-white font-medium"
+                style="background-color: #b85c38;">
+          次へ →
+        </button>
+      </div>
+
+      <%# Step3ポップアップ：質問と投稿フォームを表示する。Step2の「次へ」で表示 %>
+      <div data-bottom-sheet-target="step3"
+           class="hidden bg-white rounded-3xl p-8 w-full max-w-sm shadow-xl">
+        <%# 質問文 %>
+        <p class="text-base font-medium mb-6 text-center" style="color: #4B2D1C;">
+          あなたは今、何をしていますか？
+        </p>
+        <%# Turboを無効化してフォーム送信後のページ全体リロードを防ぐ %>
+        <%= form_with model: [@current_moment, Entry.new], data: { turbo: false } do |f| %>
+          <%= f.text_area :body,
+                placeholder: "今を書く。",
+                rows: 4,
+                class: "w-full rounded-xl p-4 text-sm resize-none focus:outline-none border",
+                style: "border-color: #e5d5c5; color: #7a6552;" %>
+          <div class="flex gap-3 mt-4">
+            <%# のこすボタン：フォームを送信する %>
+            <%= f.submit "のこす",
+                  class: "flex-1 py-3 rounded-full text-white font-medium cursor-pointer",
+                  style: "background-color: #b85c38;" %>
+          </div>
+        <% end %>
+      </div>
+
+    </div><%# /ポップアップ %>
+
+    <%# ＋ボタン：タップするとボトムシートを開く %>
+    <button data-action="bottom-sheet#open"
+            class="fixed right-6 bottom-24 w-14 h-14 rounded-full text-white text-3xl shadow-lg flex items-center justify-center"
+            style="background-color: #b85c38;">
+      +
+    </button>
+
+    <%# オーバーレイ：ボトムシート表示時に背景を暗転させる。タップで閉じる %>
+    <div data-bottom-sheet-target="overlay"
+         data-action="click->bottom-sheet#close"
+         class="hidden fixed inset-0 bg-black/40 z-10">
+    </div>
+
+    <%# ボトムシート：投稿フォームを収納する。デフォルト非表示 %>
+    <div data-bottom-sheet-target="sheet"
+         class="hidden fixed bottom-0 left-0 right-0 rounded-t-2xl bg-white p-6 z-20 shadow-xl">
+      <%# ボトムシートのヘッダー：現在の日時と✕ボタンを横並びで表示する %>
+      <div class="flex items-center justify-between mb-4">
+        <%# 投稿時の現在日時を日本時間で「4月12日 16:07」形式で表示する %>
+        <p class="text-sm" style="color: #7a6552;"><%= Time.current.in_time_zone("Tokyo").strftime("%-m月%-d日 %H:%M") %></p>
+        <%# ✕ボタン：ボトムシートを閉じる %>
+        <button data-action="bottom-sheet#close"
+                class="text-xl" style="color: #7a6552;">✕</button>
+      </div>
+      <%# 投稿フォーム：Turboを無効化してページ全体リロードで送信する %>
+      <%= form_with model: [@current_moment, Entry.new], data: { turbo: false } do |f| %>
+        <%= f.text_area :body,
+              placeholder: "今を書く。",
+              rows: 4,
+              class: "w-full rounded-xl p-4 text-sm resize-none focus:outline-none border",
+              style: "border-color: #e5d5c5; color: #7a6552;" %>
+        <%# のこすボタン：フォームを送信する %>
+        <%= f.submit "のこす",
+              class: "mt-4 w-full py-3 rounded-full text-white font-medium cursor-pointer",
+              style: "background-color: #b85c38;" %>
+      <% end %>
+    </div>
+
+    </div><%# /data-controller="bottom-sheet" %>
+
   <% end %>
-<% end %>
+</div>

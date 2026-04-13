@@ -1,20 +1,68 @@
-<h1>これまでの「今」</h1>
+<%# ページ全体のラッパー %>
+<div class="min-h-screen pb-20" style="background-color: #f0ede8;">
 
-<% if @moments.empty? %>
-  <p>まだ記録がありません。</p>
-<% else %>
-  <% @moments.each do |moment| %>
-    <div>
-      <%# 国名・時刻・定型文を表示する %>
-      <p><%= moment.country.name %></p>
-      <%# occurred_atがnilの場合は"--:--"を表示する %>
-      <p><%= moment.occurred_at&.in_time_zone(moment.country.timezone)&.strftime("%H:%M") || "--:--" %></p>
-      <p><%= moment.fixed_text %></p>
+  <%# ページヘッダー：アプリ名（左）とページタイトル（右）を横並びで表示 %>
+  <header class="flex items-center justify-between px-6 py-4" style="background-color: #fdf8f3;">
+    <p class="text-xl font-bold" style="color: #4B2D1C;">Meanwhile</p>
+    <p class="text-sm" style="color: #7a6552;">これまでの「今」</p>
+  </header>
 
-      <%# このmomentに紐づく日記一覧を表示する %>
-      <% moment.entries.each do |entry| %>
-        <p><%= entry.body %></p>
-      <% end %>
-    </div>
+  <div class="px-4 pt-6">
+
+  <% if @moments.empty? %>
+    <%# momentがまだない場合のメッセージ %>
+    <p class="text-center text-sm mt-16" style="color: #7a6552;">まだ記録がありません。</p>
+  <% else %>
+
+    <%# momentカード一覧（新しい順） %>
+    <% @moments.each do |moment| %>
+      <div class="mb-4 rounded-2xl overflow-hidden shadow-sm">
+
+        <%# カード上部：国名・日付（左）と現地時刻（右）を横並びで表示 %>
+        <div class="flex items-center justify-between px-4 py-3" style="background-color: #e8f0f5;">
+          <div>
+            <%# 国旗絵文字：country_codeで条件分岐して表示する %>
+            <%# 国名 %>
+            <p class="text-xs font-medium" style="color: #7a6552;">
+              <%= case moment.country.country_code
+                  when "KR" then "🇰🇷"
+                  when "TR" then "🇹🇷"
+                  when "BR" then "🇧🇷"
+                  when "SE" then "🇸🇪"
+                  when "AU" then "🇦🇺"
+                  when "KE" then "🇰🇪"
+                  end %>
+              <%= moment.country.name %>
+            </p>
+            <%# 現地の日付（occurred_atをその国のタイムゾーンに変換）と日本時間での記録時刻を並べて表示 %>
+            <p class="text-xs mt-0.5" style="color: #7a6552;">
+              <%= moment.occurred_at&.in_time_zone(moment.country.timezone)&.strftime("%-m月%-d日") %>
+              <%= moment.created_at.in_time_zone("Tokyo").strftime("%H:%M") %>
+            </p>
+          </div>
+          <%# 現地時刻（大きめで右側に表示） %>
+          <p class="text-3xl font-bold tracking-tight" style="color: #4B2D1C;">
+            <%= moment.occurred_at&.in_time_zone(moment.country.timezone)&.strftime("%H:%M") || "--:--" %>
+          </p>
+        </div>
+
+        <%# カード下部：entriesをバブル形式で右寄せ表示 %>
+        <div class="bg-white px-4 py-3 min-h-12">
+          <% if moment.entries.any? %>
+            <div class="flex flex-col items-end gap-2">
+              <% moment.entries.each do |entry| %>
+                <%# entryバブル：右寄せ・テラコッタ背景・白テキスト %>
+                <span class="inline-block px-4 py-2 rounded-full text-sm text-white" style="background-color: #b85c38;">
+                  <%= entry.body %>
+                </span>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+
+      </div>
+    <% end %>
+
   <% end %>
-<% end %>
+  </div>
+</div>
