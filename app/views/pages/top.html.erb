@@ -154,12 +154,15 @@
 
   <%# ========== アプリについてモーダル ========== %>
   <div id="modal"
-       class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-end justify-center px-0">
+       class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-end justify-center px-0"
+       role="dialog"
+       aria-modal="true"
+       aria-labelledby="modal-title">
     <div class="bg-white rounded-t-3xl w-full max-w-lg p-8 pb-10">
 
       <%# モーダルヘッダー：閉じるボタン %>
       <div class="flex items-center justify-between mb-6">
-        <p class="text-base font-bold" style="color: #4B2D1C;">アプリについて</p>
+        <p id="modal-title" class="text-base font-bold" style="color: #4B2D1C;">アプリについて</p>
         <button onclick="closeModal()" class="text-xl" style="color: #7a6552;">✕</button>
       </div>
 
@@ -306,6 +309,9 @@
 
     window.openModal = function() {
       document.getElementById('modal').classList.remove('hidden');
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeModal();
+      });
     };
 
     window.closeModal = function() {
