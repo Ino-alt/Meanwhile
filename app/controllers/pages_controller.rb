@@ -32,8 +32,8 @@ class PagesController < ApplicationController
   def index
     @current_moment = current_user.moments.find_by(id: session[:moment_id])
 
-    # momentが1日以上前の場合はセッションをリセットして作り直す
-    if @current_moment&.occurred_at&.< (Time.now - 1.day)
+    # momentが前日以前の場合はセッションをリセットして作り直す
+    if @current_moment && @current_moment.occurred_at.to_date < Date.today
       session.delete(:moment_id)
       @current_moment = nil
     end
