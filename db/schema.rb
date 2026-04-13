@@ -10,16 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_08_055232) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_13_095729) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
   create_table "countries", force: :cascade do |t|
-    t.string "country_code"
+    t.string "country_code", null: false
     t.datetime "created_at", null: false
     t.string "name"
     t.string "timezone"
     t.datetime "updated_at", null: false
+    t.index ["country_code"], name: "index_countries_on_country_code", unique: true
   end
 
   create_table "entries", force: :cascade do |t|
