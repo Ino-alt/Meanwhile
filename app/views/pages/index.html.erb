@@ -1,5 +1,5 @@
 <%# ページ全体のラッパー。背景色のみ指定し、data-controllerはポップアップ以下のdivに移動 %>
-<div class="min-h-screen pb-20" style="background-color: #f0ede8;">
+<div class="min-h-screen pb-20" style="background-color: #f0ede8; overscroll-behavior-x: none; touch-action: pan-y;">
 
   <% if @error_message %>
     <%# 国データがない場合のエラーメッセージ %>
@@ -233,3 +233,22 @@
 
   <% end %>
 </div>
+
+<%# 横スワイプによるブラウザのページ遷移（戻る/進む）を無効化するスクリプト %>
+<%# turbo:before-visit でリスナーを削除し、他ページに影響しないようにする %>
+<script>
+  (function() {
+    function preventHorizontalNavigation(e) {
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+        e.preventDefault();
+      }
+    }
+
+    window.addEventListener('wheel', preventHorizontalNavigation, { passive: false });
+
+    document.addEventListener('turbo:before-visit', function cleanup() {
+      window.removeEventListener('wheel', preventHorizontalNavigation);
+      document.removeEventListener('turbo:before-visit', cleanup);
+    });
+  })();
+</script>

@@ -9,8 +9,11 @@ Rails.application.routes.draw do
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
-  # トップページ：ランダムな国の「今」を表示する
-  root "pages#index"
+  # ランディングページ：アプリ説明スライドを表示する
+  root "pages#top"
+
+  # ホーム：ランダムな国の「今」を表示するメインページ
+  get "home", to: "pages#index"
 
   # 更新ボタン用：セッションをリセットして新しい国をランダムに表示する
   post "refresh", to: "pages#refresh"
