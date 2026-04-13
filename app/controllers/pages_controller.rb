@@ -28,7 +28,11 @@ class PagesController < ApplicationController
     ]
   }.freeze
 
-  # トップページ：セッションのmomentを使い回すか、新しく作成してビューに渡す
+  # ランディングページ：アプリの説明スライドを表示する
+  def top
+  end
+
+  # ホーム：セッションのmomentを使い回すか、新しく作成してビューに渡す
   def index
     @current_moment = current_user.moments.find_by(id: session[:moment_id])
 
@@ -71,7 +75,7 @@ class PagesController < ApplicationController
   def refresh
     session.delete(:moment_id)
     session[:show_popup] = true
-    redirect_to root_path
+    redirect_to home_path
   end
 
   private

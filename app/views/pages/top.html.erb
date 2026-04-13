@@ -1,0 +1,332 @@
+<%# ランディングページ：4枚のフェードスライドでアプリを紹介する %>
+<%# スワイプ・クリックで切り替え可能。「アプリについて」タップでモーダル表示 %>
+
+<div class="relative min-h-screen overflow-hidden" style="background-color: #f0ede8; overscroll-behavior-x: none; touch-action: pan-y;">
+
+  <%# ========== スライドラッパー ========== %>
+  <div id="slides" class="relative w-full h-screen" style="overscroll-behavior-x: none; touch-action: pan-y;">
+
+    <%# ---------------------------------------- %>
+    <%# スライド1：ロゴ・キャッチコピー・はじめるボタン %>
+    <%# ---------------------------------------- %>
+    <%# 表示中：style="opacity:1;"。非表示：style="opacity:0; pointer-events:none;" でフェード切り替え %>
+    <div id="slide-1" class="slide absolute inset-0 flex flex-col items-center justify-center px-8 transition-opacity duration-700" style="opacity:1;">
+
+      <%# 右上：アプリについてリンク %>
+      <button onclick="openModal()"
+              class="absolute top-6 right-6 text-xs"
+              style="color: #7a6552;">
+        ⓘ アプリについて
+      </button>
+
+      <%# アプリ名ロゴ %>
+      <p class="text-5xl font-bold tracking-tight mb-4" style="color: #4B2D1C;">Meanwhile</p>
+
+      <%# キャッチコピー %>
+      <p class="text-sm text-center leading-relaxed mb-12" style="color: #7a6552;">
+        世界の「今」と、自分の「今」を。
+      </p>
+
+      <%# はじめるボタン %>
+      <%= link_to "はじめる", home_path,
+            class: "px-10 py-3 rounded-full text-white font-medium text-sm",
+            style: "background-color: #b85c38;" %>
+
+      <%# 下部：スライドインジケーター %>
+      <div class="absolute bottom-10 flex gap-2" id="indicators"></div>
+
+    </div>
+
+    <%# ---------------------------------------- %>
+    <%# スライド2：WHAT IS THIS・アプリの概要説明 %>
+    <%# ---------------------------------------- %>
+    <div id="slide-2" class="slide absolute inset-0 flex flex-col items-center justify-center px-8 transition-opacity duration-700" style="opacity:0; pointer-events:none;">
+
+      <%# セクションタイトル %>
+      <p class="text-xs font-bold tracking-widest mb-8" style="color: #b85c38;">WHAT IS THIS</p>
+
+      <%# 世界カード風イメージ %>
+      <div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-md mb-8">
+        <%# 国旗＋国名（ダミー表示） %>
+        <p class="text-xs font-bold tracking-widest mb-4" style="color: #7a6552;">🇧🇷 BRAZIL</p>
+        <%# 現地時刻（大きく） %>
+        <p class="text-5xl font-bold tracking-tight mb-1" style="color: #4B2D1C;">03:24</p>
+        <%# 定型文サンプル %>
+        <p class="text-xs leading-relaxed mt-3" style="color: #7a6552;">
+          ブラジル では今、深夜の静けさが広がっています。
+        </p>
+      </div>
+
+      <%# 説明文 %>
+      <p class="text-sm text-center leading-relaxed" style="color: #4B2D1C;">
+        起動・更新するとランダムな国の「今」が表示されます。<br>
+        思考が煮詰まったとき、世界の時間と並べてみてください。
+      </p>
+
+    </div>
+
+    <%# ---------------------------------------- %>
+    <%# スライド3：一覧画面のイメージ・記録の説明 %>
+    <%# ---------------------------------------- %>
+    <div id="slide-3" class="slide absolute inset-0 flex flex-col items-center justify-center px-8 transition-opacity duration-700" style="opacity:0; pointer-events:none;">
+
+      <%# 一覧画面イメージ（吹き出し風） %>
+      <div class="w-full max-w-xs mb-8">
+        <%# 世界の吹き出し（左） %>
+        <div class="flex flex-col items-start mb-4">
+          <p class="text-xs mb-1" style="color: #7a6552;">🇸🇪 Sweden</p>
+          <div class="bg-white rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">
+            <p class="text-xs leading-relaxed" style="color: #4B2D1C;">スウェーデン では今、朝の光が静かに広がっています。</p>
+          </div>
+          <p class="text-xs mt-1 ml-1" style="color: #7a6552;">07:12</p>
+        </div>
+        <%# ユーザーの投稿（右） %>
+        <div class="flex flex-col items-end">
+          <div class="rounded-2xl rounded-br-sm px-4 py-3 max-w-xs" style="background-color: #b85c38;">
+            <p class="text-xs text-white">コーヒーを飲みながら仕事中</p>
+          </div>
+          <p class="text-xs mt-1 mr-1" style="color: #7a6552;">16:14</p>
+        </div>
+      </div>
+
+      <%# 説明文 %>
+      <p class="text-sm text-center leading-relaxed" style="color: #4B2D1C;">
+        世界の「今」と自分の投稿がセットで記録されます。<br>
+        あとから振り返ることができます。
+      </p>
+
+    </div>
+
+    <%# ---------------------------------------- %>
+    <%# スライド4：3ステップ・はじめるボタン %>
+    <%# ---------------------------------------- %>
+    <div id="slide-4" class="slide absolute inset-0 flex flex-col items-center justify-center px-8 transition-opacity duration-700" style="opacity:0; pointer-events:none;">
+
+      <%# 右上：アプリについてリンク %>
+      <button onclick="openModal()"
+              class="absolute top-6 right-6 text-xs"
+              style="color: #7a6552;">
+        ⓘ アプリについて
+      </button>
+
+      <%# ステップタイトル %>
+      <p class="text-xs font-bold tracking-widest mb-8" style="color: #b85c38;">HOW TO USE</p>
+
+      <%# 3ステップ %>
+      <div class="w-full max-w-xs space-y-5 mb-10">
+        <%# ステップ1 %>
+        <div class="flex items-start gap-4">
+          <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs text-white font-bold flex-shrink-0"
+                style="background-color: #b85c38;">1</span>
+          <p class="text-sm leading-relaxed" style="color: #4B2D1C;">
+            起動するとランダムな国の「今」が表示されます。
+          </p>
+        </div>
+        <%# ステップ2 %>
+        <div class="flex items-start gap-4">
+          <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs text-white font-bold flex-shrink-0"
+                style="background-color: #b85c38;">2</span>
+          <p class="text-sm leading-relaxed" style="color: #4B2D1C;">
+            ＋ボタンで今の自分を1行書き残せます。
+          </p>
+        </div>
+        <%# ステップ3 %>
+        <div class="flex items-start gap-4">
+          <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs text-white font-bold flex-shrink-0"
+                style="background-color: #b85c38;">3</span>
+          <p class="text-sm leading-relaxed" style="color: #4B2D1C;">
+            更新ボタンで新しい国・時刻に切り替えられます。
+          </p>
+        </div>
+      </div>
+
+      <%# はじめるボタン %>
+      <%= link_to "はじめる", home_path,
+            class: "px-10 py-3 rounded-full text-white font-medium text-sm",
+            style: "background-color: #b85c38;" %>
+
+    </div>
+
+  </div><%# /slides %>
+
+  <%# ========== スライドインジケーター（全スライド共通・JS で生成） ========== %>
+  <div class="absolute bottom-10 left-0 right-0 flex justify-center gap-2" id="indicator-bar"></div>
+
+  <%# ========== アプリについてモーダル ========== %>
+  <div id="modal"
+       class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-end justify-center px-0"
+       role="dialog"
+       aria-modal="true"
+       aria-labelledby="modal-title">
+    <div class="bg-white rounded-t-3xl w-full max-w-lg p-8 pb-10 max-h-[85vh] overflow-y-auto">
+
+      <%# モーダルヘッダー：閉じるボタン %>
+      <div class="flex items-center justify-between mb-6">
+        <p id="modal-title" class="text-base font-bold" style="color: #4B2D1C;">アプリについて</p>
+        <button onclick="closeModal()" class="text-xl" style="color: #7a6552;">✕</button>
+      </div>
+
+      <%# コンセプト %>
+      <p class="text-xs font-bold tracking-widest mb-2" style="color: #b85c38;">CONCEPT</p>
+      <p class="text-sm leading-relaxed mb-6" style="color: #4B2D1C;">
+        毎日同じ場所、同じ時間の中にいると、視野が狭くなってしまうことがあります。
+        そんなとき、世界のどこかの「今」を先に眺めることで、少しだけ自分の外に出てみませんか？
+      </p>
+
+      <%# 使い方 %>
+      <p class="text-xs font-bold tracking-widest mb-2" style="color: #b85c38;">HOW TO USE</p>
+      <ol class="space-y-3 mb-6">
+        <li>
+          <p class="text-sm font-medium" style="color: #4B2D1C;">1. アプリを開く</p>
+          <p class="text-xs mt-0.5" style="color: #7a6552;">世界の今が自動で表示されます</p>
+        </li>
+        <li>
+          <p class="text-sm font-medium" style="color: #4B2D1C;">2. 世界の「今」を眺める</p>
+          <p class="text-xs mt-0.5" style="color: #7a6552;">国・時刻・状況がランダムに変わります</p>
+        </li>
+        <li>
+          <p class="text-sm font-medium" style="color: #4B2D1C;">3. 自分の「今」を書き残す</p>
+          <p class="text-xs mt-0.5" style="color: #7a6552;">＋ボタンから入力して記録できます</p>
+        </li>
+      </ol>
+
+      <%# ボタン説明 %>
+      <p class="text-xs font-bold tracking-widest mb-2" style="color: #b85c38;">BUTTONS</p>
+      <ul class="space-y-2">
+        <%# 更新ボタンの説明 %>
+        <li class="flex items-start gap-3">
+          <span class="text-xs px-2 py-0.5 rounded-full text-white flex-shrink-0"
+                style="background-color: #b85c38;">更新</span>
+          <p class="text-sm" style="color: #4B2D1C;">新しい国・時刻に切り替えます</p>
+        </li>
+        <%# ＋ボタンの説明 %>
+        <li class="flex items-start gap-3">
+          <span class="text-xs px-2 py-0.5 rounded-full text-white flex-shrink-0"
+                style="background-color: #b85c38;">＋</span>
+          <p class="text-sm" style="color: #4B2D1C;">今の自分を1行書き残せます</p>
+        </li>
+      </ul>
+
+    </div>
+  </div><%# /modal %>
+
+</div><%# /min-h-screen %>
+
+<%# ========== JavaScript：スライド切り替え・スワイプ・モーダル ========== %>
+<%# 即時関数（IIFE）でスコープを閉じ、重複実行を防ぐ。DOMContentLoaded または即時実行で初期化する %>
+<script>
+  (function() {
+    var TOTAL = 4;
+    var current = 1;
+
+    function init() {
+      // 既存のインジケーターをクリア
+      var bar = document.getElementById('indicator-bar');
+      if (!bar) return;
+      bar.innerHTML = '';
+
+      // インジケーターを生成
+      for (var i = 1; i <= TOTAL; i++) {
+        var dot = document.createElement('span');
+        dot.id = 'dot-' + i;
+        dot.className = 'w-2 h-2 rounded-full transition-colors duration-300';
+        dot.style.backgroundColor = '#e5d5c5';
+        bar.appendChild(dot);
+      }
+
+      // 全スライドを非表示にしてからスライド1を表示
+      for (var i = 1; i <= TOTAL; i++) {
+        var s = document.getElementById('slide-' + i);
+        if (s) {
+          s.style.opacity = '0';
+          s.style.pointerEvents = 'none';
+        }
+      }
+      current = 1;
+      showSlide(1);
+
+      // スワイプ（横スワイプのみ処理してブラウザ遷移を防ぐ）
+      var touchStartX = 0;
+      var touchStartY = 0;
+      var slides = document.getElementById('slides');
+
+      slides.addEventListener('touchstart', function(e) {
+        touchStartX = e.changedTouches[0].clientX;
+        touchStartY = e.changedTouches[0].clientY;
+      }, { passive: true });
+
+      // touchmove をnon-passiveで登録し、横・縦スワイプ問わずブラウザのデフォルト動作（ページ遷移・スクロール）を防ぐ
+      slides.addEventListener('touchmove', function(e) {
+        e.preventDefault();
+      }, { passive: false });
+
+      slides.addEventListener('touchend', function(e) {
+        var diffX = touchStartX - e.changedTouches[0].clientX;
+        var diffY = touchStartY - e.changedTouches[0].clientY;
+        // 縦の移動が横より大きい場合にスライド切り替え
+        if (Math.abs(diffY) > Math.abs(diffX) && Math.abs(diffY) > 30) {
+          if (diffY > 0) {
+            showSlide(current + 1); // 上スワイプ→次へ
+          } else {
+            showSlide(current - 1); // 下スワイプ→前へ
+          }
+        }
+      }, { passive: true });
+
+      // クリックで切り替え
+      slides.addEventListener('click', function(e) {
+        if (!document.getElementById('modal').classList.contains('hidden')) return;
+        if (e.target.closest('a, button')) return;
+        var x = e.clientX;
+        var half = window.innerWidth / 2;
+        if (x >= half) {
+          showSlide(current + 1);
+        } else {
+          showSlide(current - 1);
+        }
+      });
+    }
+
+    function showSlide(n) {
+      if (n < 1 || n > TOTAL) return;
+      var prev = document.getElementById('slide-' + current);
+      if (prev) {
+        prev.style.opacity = '0';
+        prev.style.pointerEvents = 'none';
+      }
+      var prevDot = document.getElementById('dot-' + current);
+      if (prevDot) prevDot.style.backgroundColor = '#e5d5c5';
+
+      current = n;
+      var next = document.getElementById('slide-' + current);
+      if (next) {
+        next.style.opacity = '1';
+        next.style.pointerEvents = 'auto';
+      }
+      var nextDot = document.getElementById('dot-' + current);
+      if (nextDot) nextDot.style.backgroundColor = '#b85c38';
+    }
+
+    window.openModal = function() {
+      document.getElementById('modal').classList.remove('hidden');
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeModal();
+      });
+    };
+
+    window.closeModal = function() {
+      document.getElementById('modal').classList.add('hidden');
+    };
+
+    document.getElementById('modal').addEventListener('click', function(e) {
+      if (e.target === this) window.closeModal();
+    });
+
+    // DOMContentLoaded または即時実行
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
+</script>

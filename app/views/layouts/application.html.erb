@@ -29,12 +29,13 @@
       <%= yield %>
     </main>
 
-    <%# 画面下部に固定されたタブナビゲーション。背景色：#fdf8f3（オフホワイト） %>
+    <%# ナビバー：pages#top（ランディングページ）では非表示にする %>
+    <% unless controller_name == 'pages' && action_name == 'top' %>
     <nav class="fixed bottom-0 left-0 right-0 flex border-t border-gray-200" style="background-color: #fdf8f3;">
 
       <%# ホームタブ：current_page?でアクティブ判定し、色を切り替える %>
-      <%= link_to root_path, class: "flex flex-col items-center justify-center flex-1 py-3 text-sm font-medium" do %>
-        <% if current_page?(root_path) %>
+      <%= link_to home_path, class: "flex flex-col items-center justify-center flex-1 py-3 text-sm font-medium" do %>
+        <% if current_page?(home_path) %>
           <span class="text-2xl" style="color: #b85c38;">🏠</span>
           <span style="color: #b85c38;">ホーム</span>
         <% else %>
@@ -55,5 +56,6 @@
       <% end %>
 
     </nav>
+    <% end %><%# /unless pages#top %>
   </body>
 </html>
