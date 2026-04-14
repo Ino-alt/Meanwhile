@@ -128,7 +128,7 @@
 
       <%# Step1ポップアップ：国旗・英語国名・現地時刻を表示する。新しいmoment作成時に自動表示 %>
       <div data-bottom-sheet-target="step1"
-           class="<%= popup_hidden %> bg-white rounded-3xl p-8 w-full max-w-sm text-center shadow-xl">
+           class="<%= popup_hidden %> bg-white rounded-3xl p-8 w-full max-w-sm text-center shadow-xl overflow-y-auto" style="max-height: 90vh;">
         <%# 国旗絵文字 %>
         <p class="text-5xl mb-3"><%= flag %></p>
         <%# 英語国名（大文字） %>
@@ -149,7 +149,7 @@
 
       <%# Step2ポップアップ：定型文を表示する。Step1の「次へ」で表示 %>
       <div data-bottom-sheet-target="step2"
-           class="hidden bg-white rounded-3xl p-8 w-full max-w-sm text-center shadow-xl">
+           class="hidden bg-white rounded-3xl p-8 w-full max-w-sm text-center shadow-xl overflow-y-auto" style="max-height: 90vh;">
         <%# 国旗＋英語国名（小さく） %>
         <p class="text-xs font-bold tracking-widest mb-6" style="color: #7a6552;">
           <%= flag %> <%= english_name %>
@@ -168,7 +168,7 @@
 
       <%# Step3ポップアップ：質問と投稿フォームを表示する。Step2の「次へ」で表示 %>
       <div data-bottom-sheet-target="step3"
-           class="hidden bg-white rounded-3xl p-8 w-full max-w-sm shadow-xl">
+           class="hidden bg-white rounded-3xl p-8 w-full max-w-sm shadow-xl overflow-y-auto" style="max-height: 90vh;">
         <%# 質問文 %>
         <p class="text-base font-medium mb-6 text-center" style="color: #4B2D1C;">
           あなたは今、何をしていますか？
@@ -179,7 +179,7 @@
                 placeholder: "今を書く。",
                 rows: 4,
                 class: "w-full rounded-xl p-4 text-sm resize-none focus:outline-none border",
-                style: "border-color: #e5d5c5; color: #7a6552;" %>
+                style: "border-color: #e5d5c5; color: #7a6552; font-size: 16px;" %>
           <div class="flex gap-3 mt-4">
             <%# のこすボタン：フォームを送信する %>
             <%= f.submit "のこす",
@@ -221,7 +221,7 @@
               placeholder: "今を書く。",
               rows: 4,
               class: "w-full rounded-xl p-4 text-sm resize-none focus:outline-none border",
-              style: "border-color: #e5d5c5; color: #7a6552;" %>
+              style: "border-color: #e5d5c5; color: #7a6552; font-size: 16px;" %>
         <%# のこすボタン：フォームを送信する %>
         <%= f.submit "のこす",
               class: "mt-4 w-full py-3 rounded-full text-white font-medium cursor-pointer",
